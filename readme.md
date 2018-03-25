@@ -18,7 +18,7 @@ pipe(
     sink(1, 'a');
     sink(1, 'b');
     sink(2);
-    sink(3, 'c');
+    sink(1, 'c');
   }),
   forEach((v) => {
     console.log(v); // 'a'
