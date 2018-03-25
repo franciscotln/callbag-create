@@ -36,7 +36,7 @@ const pipe = require('callbag-pipe');
 pipe(
   create(),
   forEach((x) => {
-    console.log(x); // void, never complets
+    console.log(x); // void
   })
 );
 ```
