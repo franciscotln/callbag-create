@@ -1,0 +1,22 @@
+{
+  "author": "Francisco Tavares de Lima Neto",
+  "description": "Creates a new Callbag given an optional producer",
+  "dependencies": {},
+  "devDependencies": {
+    "tape": "~4.9.0"
+  },
+  "keywords": [
+    "callbag"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "callbag-create",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/franciscotln/callbag-create.git"
+  },
+  "scripts": {
+    "test": "tape test.js"
+  },
+  "version": "1.0.0"
+}
