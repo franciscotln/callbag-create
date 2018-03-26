@@ -52,7 +52,11 @@ test('it creates a new callbag with a producer that controls the values emitions
     sink(1, 'd');
   });
 
+  let talkback;
   source(0, (type, data) => {
+    if (type === 0) {
+      talkback = data;
+    }
     const et = downwardsExpectedType.shift();
     t.equals(type, et[0], 'downwards type is expected: ' + et[0]);
     t.equals(typeof data, et[1], 'downwards data type is expected: ' + et[1]);
@@ -60,6 +64,7 @@ test('it creates a new callbag with a producer that controls the values emitions
       const e = downwardsExpected.shift();
       t.deepEquals(data, e, 'downwards data is expected: ' + e);
     }
+    if (type === 0 || type === 1) talkback(1);
   });
 
   t.pass('Nothing else happens after the producer completes for the first time');
@@ -67,11 +72,10 @@ test('it creates a new callbag with a producer that controls the values emitions
 });
 
 test('it creates a new callbag with a producer that emits nothing upon upwards 2', (t) => {
-  t.plan(5);
+  t.plan(3);
 
   const downwardsExpectedType = [
-    [0, 'function'],
-    [2, 'undefined']
+    [0, 'function']
   ];
 
   const source = create((sink) => {

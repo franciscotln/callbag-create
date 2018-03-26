@@ -1,20 +1,17 @@
 const create = prod => (start, sink) => {
-  if (start !== 0) return;
-  let got2 = false;
+  let started = false;
   let disposed = false;
-  function checkGot2(t) {
-    got2 = got2 || t === 2;
-  }
-  sink(start, checkGot2);
-  if (typeof prod !== 'function') return;
-  prod((t, d) => {
-    if (t === 0) return;
-    checkGot2(t);
-    !got2 && sink(t, d);
-    if (got2 && !disposed) {
-      disposed = true;
-      sink(2);
-    }
+  start === 0 && sink(start, t => {
+    if (typeof prod !== 'function') return;
+    !started && t === 1 && prod((pt, pd) => {
+      if (pt === start) return;
+      started = true;
+      !disposed && t === 1 && pt === 1 && sink(pt, pd);
+      if (t === 2 || pt === 2 && !disposed) {
+        disposed = true;
+        sink(2);
+      }
+    });
   });
 };
 
