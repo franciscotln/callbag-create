@@ -93,3 +93,57 @@ test('it creates a new callbag with a producer that emits nothing upon upwards 2
   t.pass('Nothing else happens after the sink sends 2 upwards');
   t.end();
 });
+
+test('it unsubscribes producer on completions received from sink', (t) => {
+  t.plan(18);
+
+  const downwardsExpectedType = [
+    [0, 'function'],
+    [1, 'number'],
+    [1, 'number'],
+    [1, 'number'],
+    [1, 'number'],
+    [1, 'number'],
+  ];
+
+  const downwardsExpected = [0, 1, 2, 3, 4];
+
+  let unsubCalled = false;
+
+  const source = create((sink) => {
+    let i = 0
+    const intervalId = setInterval(() => sink(1, i++), 30)
+    return () => {
+      unsubCalled = true;
+      clearInterval(intervalId)
+    };
+  });
+
+  let taken = 0
+  let talkback
+  source(0, (type, data) => {
+    const et = downwardsExpectedType.shift();
+    t.equals(type, et[0], 'downwards type is expected: ' + et[0]);
+    t.equals(typeof data, et[1], 'downwards data type is expected: ' + et[1]);
+
+    if (type === 0) {
+      talkback = data;
+      talkback(1)
+    }
+
+    if (type === 1) {
+      const e = downwardsExpected.shift();
+      t.deepEquals(data, e, 'downwards data is expected: ' + e);
+
+      taken++
+      if (taken === 5) {
+        talkback(2)
+      }
+    }
+  });
+
+  setTimeout(() => {
+    t.ok(unsubCalled, 'producer got unsubscribed')
+    t.end();
+  }, 200)
+});
