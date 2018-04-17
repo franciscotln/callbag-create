@@ -2,23 +2,24 @@ const create = prod => (start, sink) => {
   if (start !== 0) return;
   if (typeof prod !== 'function') {
     sink(0, () => {});
+    sink(2);
     return;
   }
-  let started = disposed = false;
-  let unsub
-  sink(0, (t, d) => {
-    if (!started && t === 1) {
-      unsub = prod((pt, pd) => {
-        if (pt === 0) return;
-        started = true;
-        !disposed && pt === 1 && sink(pt, pd);
-        if (pt === 2 && !disposed) {
-          disposed = true;
-          sink(2);
-        }
-      });
+  let end;
+  let got2;
+  let unsub;
+  sink(0, t => {
+    got2 = got2 || t === 2;
+  });
+  unsub = prod((t, d) => {
+    if (end || t === 0) return;
+    if (!got2) {
+      sink(t, d);
+      got2 = got2 || t === 2;
+    } else if (!end) {
+      end = true;
+      if (unsub) unsub();
     }
-    t === 2 && unsub && unsub(d);
   });
 };
 
