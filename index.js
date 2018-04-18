@@ -6,20 +6,16 @@ const create = prod => (start, sink) => {
     return;
   }
   let end;
-  let got2;
   let unsub;
-  sink(0, t => {
-    got2 = got2 || t === 2;
-  });
+  const maybeDispose = t => {
+    end = end || t === 2;
+    if (end && typeof unsub === 'function') unsub();
+  };
+  sink(0, maybeDispose);
   unsub = prod((t, d) => {
     if (end || t === 0) return;
-    if (!got2) {
-      sink(t, d);
-      got2 = got2 || t === 2;
-    } else if (!end) {
-      end = true;
-      if (unsub) unsub();
-    }
+    sink(t, d);
+    maybeDispose(t);
   });
 };
 
