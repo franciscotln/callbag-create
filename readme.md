@@ -14,16 +14,50 @@ const forEach = require('callbag-for-each');
 const pipe = require('callbag-pipe');
 
 pipe(
-  create((sink) => {
-    sink(1, 'a');
-    sink(1, 'b');
-    sink(2);
-    sink(1, 'c');
+  create((next, error, done) => {
+    next('a');
+    next('b');
+    done();
+    next('c');
   }),
   forEach((v) => {
-    console.log(v); // 'a'
-  })                // 'b'
+    console.log(v);
+  })
 );
+// logs 'a', 'b', then completes.
+// Calling next('c') does nothing since done() was called and terminated the callbag
+```
+
+### With a Producer returning a clean-up logic
+
+```js
+const create = require('callbag-create');
+const forEach = require('callbag-for-each');
+const pipe = require('callbag-pipe');
+
+const unsubscribe = pipe(
+  create((next, error, done) => {
+    const id = setTimeout(() => {
+      next('a');
+      done();
+    }, 1000);
+
+    return () => {
+      clearTimeout(id);
+    };
+  }),
+  subscribe({
+    next(v) {
+      console.log(v);
+    },
+    complete() {
+      console.log('Done()');
+    }
+  })
+);
+
+unsubscribe();
+// logs nothing since it was unsubscribed before emitting and the timeout is cleared
 ```
 
 ### With a Noop Producer

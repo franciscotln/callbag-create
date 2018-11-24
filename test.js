@@ -1,5 +1,5 @@
 const test = require('tape');
-const create = require('./index');
+const create = require('.');
 
 test('it creates a new callbag without a producer and never emits values', t => {
   t.plan(5);
@@ -44,13 +44,13 @@ test('it creates a new callbag with a producer that controls the values emitions
 
   const downwardsExpected = ['a', 'b'];
 
-  const source = create((sink) => {
-    sink(1, 'a');
-    sink(1, 'b');
-    sink(2);
-    sink(2);
-    sink(1, 'c');
-    sink(1, 'd');
+  const source = create((next, error, done) => {
+    next('a');
+    next('b');
+    done(2);
+    done(2);
+    next('c');
+    next('d');
   });
 
   let talkback;
@@ -79,9 +79,9 @@ test('it creates a new callbag with a producer that emits nothing upon upwards 2
     [0, 'function']
   ];
 
-  const source = create((sink) => {
-    sink(1, 'a');
-    sink(1, 'b');
+  const source = create((next) => {
+    next('a');
+    next('b');
   });
 
   source(0, (type, data) => {
@@ -111,9 +111,9 @@ test('it unsubscribes producer on completions received from sink', t => {
 
   let unsubCalled = false;
 
-  const source = create((sink) => {
+  const source = create((next) => {
     let i = 0;
-    const intervalId = setInterval(() => sink(1, i++), 30);
+    const intervalId = setInterval(() => next(i++), 30);
     return () => {
       unsubCalled = true;
       clearInterval(intervalId);

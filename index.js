@@ -6,17 +6,28 @@ const create = prod => (start, sink) => {
     return;
   }
   let end;
-  let unsub;
-  const maybeDispose = t => {
-    end = end || t === 2;
-    if (end && typeof unsub === 'function') unsub();
-  };
-  sink(0, maybeDispose);
-  unsub = prod((t, d) => {
-    if (end || t === 0) return;
-    sink(t, d);
-    maybeDispose(t);
-  });
+  let clean;
+	sink(0, t => {
+		if (!end) {
+			end = t === 2;
+			if (end && typeof clean === 'function') clean();
+		}
+	});
+	clean = prod(v => {
+		if (!end) {
+			sink(1, v);
+		}
+	}, e => {
+		if (!end && e !== undefined) {
+			end = true;
+			sink(2, e);
+		}
+	}, () => {
+		if (!end) {
+			end = true;
+			sink(2);
+		}
+	});
 };
 
 module.exports = create;
