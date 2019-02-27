@@ -5,7 +5,7 @@ const create = prod => (start, sink) => {
     sink(2);
     return;
   }
-  let end;
+  let end = false;
   let clean;
 	sink(0, t => {
 		if (!end) {
@@ -13,6 +13,9 @@ const create = prod => (start, sink) => {
 			if (end && typeof clean === 'function') clean();
 		}
 	});
+	if (end) {
+		return;
+	}
 	clean = prod(v => {
 		if (!end) {
 			sink(1, v);
