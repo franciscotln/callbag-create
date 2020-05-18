@@ -5,8 +5,8 @@
     "callbag": "1.2.0"
   },
   "devDependencies": {
-    "rollup": "^1.17.0",
-    "tape": "^4.9.0"
+    "rollup": "2.10.3",
+    "tape": "5.0.0"
   },
   "keywords": [
     "callbag"
