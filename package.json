@@ -25,6 +25,10 @@
     "test": "tape test.js",
     "prepare": "npm test"
   },
-  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.cjs.js",
+    "*.d.ts"
+  ],
   "version": "2.1.1"
 }
