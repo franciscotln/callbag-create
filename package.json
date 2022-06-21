@@ -2,7 +2,7 @@
   "author": "Francisco Tavares de Lima Neto",
   "description": "Creates a new Callbag given an optional producer",
   "dependencies": {
-    "callbag": "1.2.0"
+    "callbag": "^1.2.0"
   },
   "devDependencies": {
     "rollup": "2.10.3",
